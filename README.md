@@ -1,88 +1,84 @@
-改进版轻量化 U-Net 模型 - 用于语义分割
-项目简介
-本项目实现了一个针对语义分割任务的轻量化 U-Net 模型。通过深度可分离卷积和通道注意力机制的引入，显著减少了模型的参数量和计算量，同时保持了良好的分割性能。项目适用于工业检测（如钢材表面缺陷检测）、医学影像分割和自然场景的语义分割任务。
+lightweight-u-net-for-segmentation
+描述:
+这是一个深度学习项目，利用改进版 U-Net 模型进行语义分割任务。本项目通过深度可分离卷积和 ECA 注意力机制对模型进行轻量化优化，同时结合高级损失函数（Focal Loss + Dice Loss）提升小目标检测和类别不平衡数据的处理能力。仓库包含完整的训练脚本、模型定义和性能评估工具。
 
 项目特点
-轻量化设计
+轻量化 U-Net 架构：
 
-使用深度可分离卷积代替标准卷积，参数量减少约 35%，推理速度提升约 30%。
-通道注意力机制 (Efficient Channel Attention)
+使用深度可分离卷积显著减少模型参数量和计算量。
+引入 Efficient Channel Attention (ECA) 模块增强通道特征表达能力。
+自定义损失函数：
 
-通过轻量化的 ECA 模块，提升特征表达能力，分割性能提升显著。
-优化损失函数
+支持 Focal Loss 和 Dice Loss 的组合，适合小目标分割和类别不平衡的任务。
+灵活的数据增强：
 
-结合 Focal Loss 和 Dice Loss，增强模型对小目标检测和边界处理的能力。
-灵活的数据增强
+提供随机翻转、亮度调整等多种增强策略，提升模型对不同场景的鲁棒性。
+性能评估工具：
 
-包括随机翻转、亮度对比度调整、颜色偏移等多种图像变换，增强模型对不同图像特征的适应性。
-项目结构
+内置 mIoU 和推理速度（FPS）计算，量化分割性能。
+数据集
+本项目适配通用语义分割任务的数据集，需自行准备。数据集目录结构如下：
+
 plaintext
-复制代码
-├── dataset/              # 数据集文件夹（需自行准备）
-│   ├── images/           # 原始图片
-│   ├── masks/            # 对应的分割掩码
-├── models/               # 模型文件夹
-│   ├── unet.py           # 改进版 U-Net 模型定义
-├── train.py              # 模型训练脚本
-├── test.py               # 模型验证脚本
-├── requirements.txt      # 项目依赖项文件
-├── README.md             # 项目文档（当前文件）
-├── output/               # 模型训练输出文件夹
-│   ├── model.pth         # 训练好的模型权重
-数据集说明
-本项目未提供具体的数据集，您可以自行准备适合语义分割任务的图像和对应的掩码数据集。数据集目录结构如下：
-
-bash
 复制代码
 dataset/
 ├── images/
 │   ├── train/   # 训练集图片
 │   ├── val/     # 验证集图片
 ├── masks/
-│   ├── train/   # 训练集对应掩码
-│   ├── val/     # 验证集对应掩码
-图片格式：支持 .jpg、.png 等。
-掩码要求：掩码图像中每个像素值代表对应的类别索引（如 0 表示背景，1 表示目标）。
-环境依赖
-请确保您的 Python 环境满足以下依赖：
-
-plaintext
+│   ├── train/   # 训练集掩码
+│   ├── val/     # 验证集掩码
+图片格式: 支持 .jpg、.png 等。
+掩码说明: 每张掩码图像中，每个像素值对应一个类别（如 0 表示背景，1 表示目标）。
+安装步骤
+1. 克隆仓库到本地：
+bash
 复制代码
-torch>=1.10.0
-torchvision>=0.11.0
-albumentations>=1.1.0
-numpy
-Pillow>=8.0.0
-tqdm
-torchsummary
-opencv-python
-安装依赖：
-
+git clone https://github.com/xiaohuanlaile/lightweight-u-net-for-segmentation.git
+cd lightweight-u-net-for-segmentation
+2. 安装依赖项：
 bash
 复制代码
 pip install -r requirements.txt
+文件结构
+plaintext
+复制代码
+├── dataset/              # 数据集文件夹
+├── train.py              # 训练脚本，用于训练改进版 U-Net 模型
+├── test.py               # 验证脚本，计算 mIoU 和 FPS
+├── run.py                # 利用训练好的权重对测试图片进行分割并生成结果
+├── README.md             # 项目文档
+├── requirements.txt      # 依赖项文件
 使用方法
-1. 模型训练
-运行以下命令开始训练：
+1. 训练模型
+在训练集上训练改进版 U-Net 模型：
 
 bash
 复制代码
 python train.py --data-path ./dataset --batch-size 16 --epochs 50 --lr 1e-4 --device cuda
-参数说明：
+可选参数：
+
 --data-path：数据集路径。
---batch-size：每批次训练的图片数量（默认为 16）。
---epochs：训练的总轮数。
---lr：初始学习率。
+--batch-size：每批次训练的图片数量（默认 16）。
+--epochs：训练的总轮数（默认 50）。
+--lr：学习率（默认 1e-4）。
 --device：使用的设备（cuda 或 cpu）。
-2. 模型验证
-在验证集上运行以下命令：
+2. 验证模型
+在验证集上运行以下命令评估模型性能：
 
 bash
 复制代码
 python test.py --data-path ./dataset --model-path ./output/model.pth --device cuda
 参数说明：
---model-path：加载训练好的模型权重路径。
+--model-path：训练好的模型权重路径。
 --device：使用的设备。
+3. 运行推理
+使用训练好的权重对测试图片进行分割：
+
+bash
+复制代码
+python run.py --data-path ./dataset --model-path ./output/model.pth --save-path ./output/results --device cuda
+结果保存到 --save-path 指定的文件夹中。
 性能对比
 模型版本	mIoU	参数量	推理速度（FPS）
 原始 U-Net	80.2%	31.2M	10.5 FPS
