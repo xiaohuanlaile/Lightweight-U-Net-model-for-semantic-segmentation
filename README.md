@@ -1,5 +1,5 @@
-Lightweight U-Net for Semantic Segmentation
-简介
+**Lightweight U-Net for Semantic Segmentation**
+**简介**
 这是一个深度学习项目，利用改进版 U-Net 模型实现语义分割任务。
 本项目通过以下优化提升了模型的效率和性能：
 
