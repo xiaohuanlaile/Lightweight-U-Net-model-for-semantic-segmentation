@@ -71,8 +71,6 @@ python train.py --data-path ./dataset --batch-size 16 --epochs 50 --lr 1e-4 --de
 2. 模型验证
 运行以下命令，在验证集上评估模型性能：
 
-bash
-复制代码
 python test.py --data-path ./dataset --model-path ./output/model.pth --device cuda
 参数说明：
 
@@ -81,8 +79,7 @@ python test.py --data-path ./dataset --model-path ./output/model.pth --device cu
 3. 推理
 使用训练好的模型对测试图片进行分割：
 
-bash
-复制代码
+
 python run.py --data-path ./dataset --model-path ./output/model.pth --save-path ./output/results --device cuda
 分割结果将保存在 --save-path 指定的目录中。
 
